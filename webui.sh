@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
 #################################################
-# Please do not make any changes to this file,  #
-# change the variables in webui-user.sh instead #
+# 请不要对此文件进行任何更改，请改变webui-user.sh中的变量 #
 #################################################
 
-# If run from macOS, load defaults from webui-macos-env.sh
+# 如果在 macOS 上运行，请从webui-macos-env.sh加载默认值
 if [[ "$OSTYPE" == "darwin"* ]]; then
     if [[ -f webui-macos-env.sh ]]
         then
@@ -12,39 +11,40 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     fi
 fi
 
-# Read variables from webui-user.sh
+# 从webui-user.sh文件中读取变量
 # shellcheck source=/dev/null
 if [[ -f webui-user.sh ]]
 then
     source ./webui-user.sh
 fi
 
-# Set defaults
-# Install directory without trailing slash
+# 设置默认值
+
+# 安装目录，不包含尾部斜杠
 if [[ -z "${install_dir}" ]]
 then
     install_dir="$(pwd)"
 fi
 
-# Name of the subdirectory (defaults to stable-diffusion-webui)
+# 子目录的名称（默认为stable-diffusion-webui）
 if [[ -z "${clone_dir}" ]]
 then
     clone_dir="stable-diffusion-webui"
 fi
 
-# python3 executable
+# python3可执行文件
 if [[ -z "${python_cmd}" ]]
 then
     python_cmd="python3"
 fi
 
-# git executable
+# git可执行文件
 if [[ -z "${GIT}" ]]
 then
     export GIT="git"
 fi
 
-# python3 venv without trailing slash (defaults to ${install_dir}/${clone_dir}/venv)
+# python3虚拟环境的路径，不包含尾部斜杠（默认为${install_dir}/${clone_dir}/venv）
 if [[ -z "${venv_dir}" ]]
 then
     venv_dir="venv"
@@ -55,10 +55,10 @@ then
     LAUNCH_SCRIPT="launch.py"
 fi
 
-# this script cannot be run as root by default
+# 默认情况下，此脚本不能以root身份运行
 can_run_as_root=0
 
-# read any command line flags to the webui.sh script
+# 读取webui.sh脚本的命令行标志
 while getopts "f" flag > /dev/null 2>&1
 do
     case ${flag} in
@@ -67,37 +67,37 @@ do
     esac
 done
 
-# Disable sentry logging
+# 禁用Sentry日志记录
 export ERROR_REPORTING=FALSE
 
-# Do not reinstall existing pip packages on Debian/Ubuntu
+# 在Debian/Ubuntu上不重新安装已存在的pip软件包
 export PIP_IGNORE_INSTALLED=0
 
-# Pretty print
+# 美观的打印分隔线
 delimiter="################################################################"
 
 printf "\n%s\n" "${delimiter}"
-printf "\e[1m\e[32mInstall script for stable-diffusion + Web UI\n"
-printf "\e[1m\e[34mTested on Debian 11 (Bullseye)\e[0m"
+printf "\e[1m\e[32mstable-diffusion + Web UI安装脚本\n"
+printf "\e[1m\e[34m在Debian 11 (Bullseye)上测试通过\e[0m"
 printf "\n%s\n" "${delimiter}"
 
-# Do not run as root
+# 禁止以root身份运行
 if [[ $(id -u) -eq 0 && can_run_as_root -eq 0 ]]
 then
     printf "\n%s\n" "${delimiter}"
-    printf "\e[1m\e[31mERROR: This script must not be launched as root, aborting...\e[0m"
+    printf "\e[1m\e[31m错误：此脚本不能以root身份运行，正在中止...\e[0m"
     printf "\n%s\n" "${delimiter}"
     exit 1
 else
     printf "\n%s\n" "${delimiter}"
-    printf "Running on \e[1m\e[32m%s\e[0m user" "$(whoami)"
+    printf "运行在 \e[1m\e[32m%s\e[0m 用户" "$(whoami)"
     printf "\n%s\n" "${delimiter}"
 fi
 
 if [[ $(getconf LONG_BIT) = 32 ]]
 then
     printf "\n%s\n" "${delimiter}"
-    printf "\e[1m\e[31mERROR: Unsupported Running on a 32bit OS\e[0m"
+    printf "\e[1m\e[31m错误：不支持运行在32位操作系统上\e[0m"
     printf "\n%s\n" "${delimiter}"
     exit 1
 fi
@@ -105,20 +105,24 @@ fi
 if [[ -d .git ]]
 then
     printf "\n%s\n" "${delimiter}"
-    printf "Repo already cloned, using it as install directory"
+    printf "已经克隆仓库，使用它作为安装目录"
     printf "\n%s\n" "${delimiter}"
     install_dir="${PWD}/../"
     clone_dir="${PWD##*/}"
 fi
 
+<<<<<<< Updated upstream
 # Check prerequisites
+=======
+# 检查先决条件
+>>>>>>> Stashed changes
 gpu_info=$(lspci 2>/dev/null | grep VGA)
 case "$gpu_info" in
     *"Navi 1"*|*"Navi 2"*) export HSA_OVERRIDE_GFX_VERSION=10.3.0
     ;;
     *"Renoir"*) export HSA_OVERRIDE_GFX_VERSION=9.0.0
         printf "\n%s\n" "${delimiter}"
-        printf "Experimental support for Renoir: make sure to have at least 4GB of VRAM and 10GB of RAM or enable cpu mode: --use-cpu all --no-half"
+        printf "实验性支持Renoir：确保至少有4GB的VRAM和10GB的内存，或者启用CPU模式：--use-cpu all --no-half"
         printf "\n%s\n" "${delimiter}"
     ;;
     *)
@@ -134,7 +138,7 @@ do
     if ! hash "${preq}" &>/dev/null
     then
         printf "\n%s\n" "${delimiter}"
-        printf "\e[1m\e[31mERROR: %s is not installed, aborting...\e[0m" "${preq}"
+        printf "\e[1m\e[31m错误：%s未安装，正在中止...\e[0m" "${preq}"
         printf "\n%s\n" "${delimiter}"
         exit 1
     fi
@@ -143,29 +147,29 @@ done
 if ! "${python_cmd}" -c "import venv" &>/dev/null
 then
     printf "\n%s\n" "${delimiter}"
-    printf "\e[1m\e[31mERROR: python3-venv is not installed, aborting...\e[0m"
+    printf "\e[1m\e[31m错误：未安装python3-venv，正在中止...\e[0m"
     printf "\n%s\n" "${delimiter}"
     exit 1
 fi
 
-cd "${install_dir}"/ || { printf "\e[1m\e[31mERROR: Can't cd to %s/, aborting...\e[0m" "${install_dir}"; exit 1; }
+cd "${install_dir}"/ || { printf "\e[1m\e[31m错误：无法切换到 %s/ 目录，正在中止...\e[0m" "${install_dir}"; exit 1; }
 if [[ -d "${clone_dir}" ]]
 then
-    cd "${clone_dir}"/ || { printf "\e[1m\e[31mERROR: Can't cd to %s/%s/, aborting...\e[0m" "${install_dir}" "${clone_dir}"; exit 1; }
+    cd "${clone_dir}"/ || { printf "\e[1m\e[31m错误：无法切换到 %s/%s/ 目录，正在中止...\e[0m" "${install_dir}" "${clone_dir}"; exit 1; }
 else
     printf "\n%s\n" "${delimiter}"
-    printf "Clone stable-diffusion-webui"
+    printf "克隆stable-diffusion-webui仓库"
     printf "\n%s\n" "${delimiter}"
     "${GIT}" clone https://github.com/AUTOMATIC1111/stable-diffusion-webui.git "${clone_dir}"
-    cd "${clone_dir}"/ || { printf "\e[1m\e[31mERROR: Can't cd to %s/%s/, aborting...\e[0m" "${install_dir}" "${clone_dir}"; exit 1; }
+    cd "${clone_dir}"/ || { printf "\e[1m\e[31m错误：无法切换到 %s/%s/ 目录，正在中止...\e[0m" "${install_dir}" "${clone_dir}"; exit 1; }
 fi
 
 if [[ -z "${VIRTUAL_ENV}" ]];
 then
     printf "\n%s\n" "${delimiter}"
-    printf "Create and activate python venv"
+    printf "创建并激活Python虚拟环境"
     printf "\n%s\n" "${delimiter}"
-    cd "${install_dir}"/"${clone_dir}"/ || { printf "\e[1m\e[31mERROR: Can't cd to %s/%s/, aborting...\e[0m" "${install_dir}" "${clone_dir}"; exit 1; }
+    cd "${install_dir}"/"${clone_dir}"/ || { printf "\e[1m\e[31m错误：无法切换到 %s/%s/ 目录，正在中止...\e[0m" "${install_dir}" "${clone_dir}"; exit 1; }
     if [[ ! -d "${venv_dir}" ]]
     then
         "${python_cmd}" -m venv "${venv_dir}"
@@ -177,25 +181,25 @@ then
         source "${venv_dir}"/bin/activate
     else
         printf "\n%s\n" "${delimiter}"
-        printf "\e[1m\e[31mERROR: Cannot activate python venv, aborting...\e[0m"
+        printf "\e[1m\e[31m错误：无法激活Python虚拟环境，正在中止...\e[0m"
         printf "\n%s\n" "${delimiter}"
         exit 1
     fi
 else
     printf "\n%s\n" "${delimiter}"
-    printf "python venv already activate: ${VIRTUAL_ENV}"
+    printf "已经激活Python虚拟环境：%s" "${VIRTUAL_ENV}"
     printf "\n%s\n" "${delimiter}"
 fi
 
-# Try using TCMalloc on Linux
+# 尝试在Linux上使用TCMalloc
 prepare_tcmalloc() {
     if [[ "${OSTYPE}" == "linux"* ]] && [[ -z "${NO_TCMALLOC}" ]] && [[ -z "${LD_PRELOAD}" ]]; then
         TCMALLOC="$(ldconfig -p | grep -Po "libtcmalloc.so.\d" | head -n 1)"
         if [[ ! -z "${TCMALLOC}" ]]; then
-            echo "Using TCMalloc: ${TCMALLOC}"
+            echo "正在使用TCMalloc：%s" "${TCMALLOC}"
             export LD_PRELOAD="${TCMALLOC}"
         else
-            printf "\e[1m\e[31mCannot locate TCMalloc (improves CPU memory usage)\e[0m\n"
+            printf "\e[1m\e[31m无法找到TCMalloc（改善CPU内存使用情况）\e[0m\n"
         fi
     fi
 }
@@ -203,13 +207,21 @@ prepare_tcmalloc() {
 if [[ ! -z "${ACCELERATE}" ]] && [ ${ACCELERATE}="True" ] && [ -x "$(command -v accelerate)" ]
 then
     printf "\n%s\n" "${delimiter}"
+<<<<<<< Updated upstream
     printf "Accelerating launch.py..."
+=======
+    printf "正在加速launch.py..."
+>>>>>>> Stashed changes
     printf "\n%s\n" "${delimiter}"
     prepare_tcmalloc
     exec accelerate launch --num_cpu_threads_per_process=6 "${LAUNCH_SCRIPT}" "$@"
 else
     printf "\n%s\n" "${delimiter}"
+<<<<<<< Updated upstream
     printf "Launching launch.py..."
+=======
+    printf "正在启动launch.py..."
+>>>>>>> Stashed changes
     printf "\n%s\n" "${delimiter}"
     prepare_tcmalloc
     exec "${python_cmd}" "${LAUNCH_SCRIPT}" "$@"
